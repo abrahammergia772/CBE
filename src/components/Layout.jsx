@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom'
 import Icon from './Icon.jsx'
+import logoDark from '../assets/cbe-birr-logo.png'
+import logoLight from '../assets/cbe-birr-logo-white.png'
 
-function Logo({ size = 46 }) {
+// Official CBE Birr logo. `onDark` swaps to the white-type variant so the
+// wordmark stays legible on the purple footer.
+export function Logo({ height = 38, onDark = false }) {
   return (
-    <div className="brand-mark" style={{ width: size, height: size }}>
-      <svg width={size * 0.6} height={size * 0.6} viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <path d="M6 24V8h7.2a4.6 4.6 0 0 1 1.4 9 4.9 4.9 0 0 1-1.2 7H6z" fill="#E8A029" />
-        <path d="M19.5 10.5H26M19.5 16H26M19.5 21.5H26" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
-      </svg>
-    </div>
+    <img
+      src={onDark ? logoLight : logoDark}
+      alt="CBE Birr — Commercial Bank of Ethiopia"
+      style={{ height, width: 'auto', display: 'block' }}
+    />
   )
 }
 
@@ -45,10 +48,11 @@ export default function Layout() {
       <header className="masthead no-print">
         <div className="wrap">
           <Link to="/" className="brand">
-            <Logo />
+            <Logo height={40} />
+            <span className="brand-rule" aria-hidden="true" />
             <div className="brand-text">
-              <div className="n1">Commercial Bank of Ethiopia</div>
-              <div className="n2">CBE Care · Customer Voice Portal</div>
+              <div className="n1">CBE Care</div>
+              <div className="n2">Complaint · Feedback · Appointments</div>
             </div>
           </Link>
 
@@ -75,8 +79,7 @@ export default function Layout() {
           <div className="footer-grid">
             <div>
               <div className="footer-brand">
-                <Logo size={40} />
-                <div className="n">CBE Care</div>
+                <Logo height={38} onDark />
               </div>
               <p className="footer-note">
                 The official complaint, feedback and appointment channel of the Commercial Bank of Ethiopia —

@@ -112,3 +112,40 @@ cbe-care/
 ---
 
 *Demonstration front-end. Not connected to live CBE banking systems.*
+
+---
+
+## Screenshots
+
+26 screenshots captured from the live app are in **[`docs/screenshots/`](docs/screenshots/)**,
+with a full index in [`docs/screenshots/README.md`](docs/screenshots/README.md).
+
+Start with the contact sheet:
+
+![All screens](docs/screenshots/00-index-contact-sheet.png)
+
+| | |
+|---|---|
+| ![Home](docs/screenshots/01-home-hero.png) | ![Complaint wizard](docs/screenshots/03-complaint-step1-type.png) |
+| **Landing page** — hero, ticket lookup, KPIs | **Complaint intake** — type + service area |
+| ![Tracking](docs/screenshots/09-track-in-progress.png) | ![Staff desk](docs/screenshots/19-admin-dashboard.png) |
+| **Case tracking** — timeline and SLA | **Staff desk** — KPIs and case queue |
+
+Regenerate them with:
+
+```bash
+npx playwright install chromium
+npm run dev              # shell 1
+node scripts/shoot.mjs   # shell 2
+```
+
+---
+
+## Branding
+
+The official **CBE Birr** logo ships in two variants, generated from the source artwork:
+
+- `src/assets/cbe-birr-logo.png` — light backgrounds (masthead)
+- `src/assets/cbe-birr-logo-white.png` — purple backgrounds (footer)
+
+Primary purple `#6D1472` and gold `#F5B55B` are sampled directly from the logo pixels.

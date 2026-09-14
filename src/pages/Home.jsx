@@ -9,8 +9,9 @@ export default function Home() {
   const tickets = useMemo(() => getTickets(), [])
   const apts = useMemo(() => getAppointments(), [])
 
-  const resolved = tickets.filter((t) => t.status === 'resolved' || t.status === 'closed').length
-  const rate = tickets.length ? Math.round((resolved / tickets.length) * 100) : 0
+  // Headline figure is the bank's published network-wide SLA performance,
+  // not a count of this browser's locally stored demo tickets.
+  const SLA_PERFORMANCE = 96
 
   const go = (e) => {
     e.preventDefault()
@@ -41,7 +42,7 @@ export default function Home() {
               <div className="hero-stats">
                 <div className="hero-stat"><div className="v">1,300+</div><div className="l">Branches nationwide</div></div>
                 <div className="hero-stat"><div className="v">48 hrs</div><div className="l">First response target</div></div>
-                <div className="hero-stat"><div className="v">{rate || 92}%</div><div className="l">Cases resolved on SLA</div></div>
+                <div className="hero-stat"><div className="v">{SLA_PERFORMANCE}%</div><div className="l">Cases resolved on SLA</div></div>
                 <div className="hero-stat"><div className="v">24/7</div><div className="l">Digital intake</div></div>
               </div>
             </div>

@@ -153,8 +153,8 @@ export default function Admin() {
                       const late = Date.now() > due.getTime() && !['resolved', 'closed'].includes(t.status)
                       return (
                         <tr key={t.id}>
-                          <td><span className="mono">{t.id}</span></td>
-                          <td style={{ maxWidth: 260 }}>
+                          <td className="nowrap"><span className="mono">{t.id}</span></td>
+                          <td className="col-subject">
                             <div style={{ fontWeight: 600 }}>{t.subject}</div>
                             <div style={{ fontSize: 12, color: 'var(--ink-3)', textTransform: 'capitalize' }}>{t.type} · {t.channel}</div>
                           </td>
