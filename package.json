@@ -1,17 +1,19 @@
 {
   "name": "cbe-care",
+  "private": true,
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "CBE Care - Complaint, Feedback & Appointment System frontend for the Commercial Bank of Ethiopia",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "render-build": "npm install --include=dev && vite build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
@@ -21,5 +23,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "vite": "^8.2.2"
   },
-  "type": "module"
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

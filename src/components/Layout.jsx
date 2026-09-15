@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom'
 import Icon from './Icon.jsx'
-import logoDark from '../assets/cbe-birr-logo.png'
-import logoLight from '../assets/cbe-birr-logo-white.png'
+import logoSeal from '../assets/cbe-logo.png'
 
-// Official CBE Birr logo. `onDark` swaps to the white-type variant so the
-// wordmark stays legible on the purple footer.
-export function Logo({ height = 38, onDark = false }) {
+// Official Commercial Bank of Ethiopia seal. The bronze emblem has enough
+// contrast to sit on both the white masthead and the purple footer, so a
+// single asset covers every placement.
+export function Logo({ height = 44 }) {
   return (
     <img
-      src={onDark ? logoLight : logoDark}
-      alt="CBE Birr — Commercial Bank of Ethiopia"
-      style={{ height, width: 'auto', display: 'block' }}
+      src={logoSeal}
+      alt="Commercial Bank of Ethiopia"
+      width={height}
+      height={height}
+      style={{ height, width: height, display: 'block', objectFit: 'contain' }}
     />
   )
 }
@@ -48,11 +50,11 @@ export default function Layout() {
       <header className="masthead no-print">
         <div className="wrap">
           <Link to="/" className="brand">
-            <Logo height={40} />
+            <Logo height={52} />
             <span className="brand-rule" aria-hidden="true" />
             <div className="brand-text">
-              <div className="n1">CBE Care</div>
-              <div className="n2">Complaint · Feedback · Appointments</div>
+              <div className="n1">Commercial Bank of Ethiopia</div>
+              <div className="n2">CBE Care Portal</div>
             </div>
           </Link>
 
@@ -79,7 +81,11 @@ export default function Layout() {
           <div className="footer-grid">
             <div>
               <div className="footer-brand">
-                <Logo height={38} onDark />
+                <Logo height={44} />
+                <div>
+                  <div className="n">Commercial Bank of Ethiopia</div>
+                  <div className="n-sub">CBE Care · Customer Voice Portal</div>
+                </div>
               </div>
               <p className="footer-note">
                 The official complaint, feedback and appointment channel of the Commercial Bank of Ethiopia —
