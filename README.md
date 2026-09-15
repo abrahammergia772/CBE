@@ -40,9 +40,19 @@ npm run preview  # serve the production build
 | `/` | **Home** | Hero, quick ticket lookup, 4 service cards, process rail, published SLA table |
 | `/submit` | **Complaint & Feedback** | 4-step wizard: Type → Details → Contact → Review, with live sidebar summary |
 | `/track` | **Track Ticket** | Reference lookup, progress bar, case timeline, star rating on resolved cases |
-| `/appointment` | **Book Appointment** | 4-step wizard: Service → Branch → Date & Time → Details, live slot availability |
+| `/appointment` | **Book Appointment** | 3-step wizard: Service → Date & Time → Details, live slot availability |
 | `/my-appointments` | **My Appointments** | Upcoming / Past / Cancelled tabs, inline reschedule, cancel, print |
-| `/admin` | **Staff Resolution Desk** | KPI tiles, filterable case table, case drawer with status workflow, appointments queue, insights |
+| `/login` | **Staff Sign In** | Mock authentication with three demo accounts and role descriptions |
+| `/admin` | **Staff Resolution Desk** | _Requires sign-in._ | KPI tiles, filterable case table, case drawer with status workflow, appointments queue, insights |
+
+---
+
+## Scope
+
+The portal is scoped to a single branch: **Commercial Bank of Ethiopia, Busa Branch** —
+Main Road, Busa Town, Dawo Woreda, South West Shewa Zone, Oromia. Customer-facing forms ask
+which locality you are based in (Busa kebeles, Dawo woreda, neighbouring woredas) rather than
+asking you to choose a branch.
 
 ---
 
@@ -58,11 +68,27 @@ npm run preview  # serve the production build
 
 **Appointments**
 - Eight bookable services with realistic durations (20–60 min)
-- 14 branches across 8 regions, filtered by region
 - 14-day date strip that skips Sundays; Saturday afternoons shown as closed
 - Live slot availability — real bookings plus deterministic branch load
+- Single-branch scope: every booking is for CBE Busa Branch, so there is no branch-picking step
 - Reschedule and cancel with conflict-aware slot re-checking
 - Booking reference `APT-NNNNN`
+
+**Staff authentication (mock)**
+- Three demo accounts, all with password `busa@123`:
+
+| Username | Name | Role | Can do |
+|---|---|---|---|
+| `manager` | Ato Getachew Bekele | Branch Manager | Everything, including closing cases |
+| `officer` | W/ro Meseret Alemu | Customer Service Officer | Update + escalate, cannot close |
+| `teller` | Ato Dawit Fikru | Senior Teller | Read-only cases, manages appointments |
+
+- `/admin` is guarded — signed-out visitors are redirected to `/login` and returned to their
+  destination after signing in
+- Session persists in `localStorage` (`cbe_care_session_v1`); signed-in user chip with sign-out in the masthead
+- Role permissions actually gate the UI: restricted status buttons are disabled, and the
+  teller sees a read-only notice instead of the update controls
+- Client-side only — this is a demonstration of the *flow*, not real security
 
 **Staff Desk**
 - KPIs: total, open, escalated, overdue-vs-SLA, resolution rate, average CSAT

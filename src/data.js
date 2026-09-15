@@ -41,26 +41,50 @@ export const SEVERITIES = [
   { id: 'critical', label: 'Critical', desc: 'Suspected fraud / large loss' },
 ]
 
-export const REGIONS = [
-  'Addis Ababa', 'Oromia', 'Amhara', 'Tigray', 'Sidama', 'South Ethiopia',
-  'Central Ethiopia', 'Somali', 'Afar', 'Benishangul-Gumuz', 'Gambella', 'Harari', 'Dire Dawa',
+// ---------------------------------------------------------------
+// This portal serves ONE branch: CBE Busa Branch.
+// Busa is the district town of Dawo woreda, South West Shewa Zone,
+// Oromia (~90 km south-west of Addis Ababa).
+// ---------------------------------------------------------------
+export const BRANCH = {
+  id: 'br-busa',
+  name: 'Busa Branch',
+  bank: 'Commercial Bank of Ethiopia',
+  town: 'Busa',
+  woreda: 'Dawo Woreda',
+  zone: 'South West Shewa Zone',
+  region: 'Oromia',
+  address: 'Main Road, Busa Town',
+  addressFull: 'Main Road, Busa Town, Dawo Woreda, South West Shewa Zone, Oromia',
+  hoursWeekday: 'Monday – Friday, 8:00 AM – 5:00 PM',
+  hoursSaturday: 'Saturday, 8:00 AM – 12:30 PM',
+  hoursShort: 'Mon–Fri 8:00 AM – 5:00 PM · Sat 8:00 AM – 12:30 PM',
+  callCentre: '951',
+  email: 'busa.branch@cbe.com.et',
+  staffCount: 14,
+  counters: 4,
+}
+
+// Where the customer is based, used instead of a nationwide region list.
+export const LOCALITIES = [
+  'Busa Town — Kebele 01',
+  'Busa Town — Kebele 02',
+  'Busa Town — Kebele 03',
+  'Dawo Woreda — rural kebele',
+  'Neighbouring woreda (Becho, Elu, Dendi, Waliso)',
+  'Outside South West Shewa Zone',
 ]
 
+// Kept as a one-element list so existing lookups keep working.
 export const BRANCHES = [
-  { id: 'br-nek', name: 'Nekemte Main Branch', region: 'Oromia', city: 'Nekemte', address: 'Burka Jato, Main Road', open: '8:00 AM – 5:00 PM' },
-  { id: 'br-nek2', name: 'Nekemte Bake Jama Branch', region: 'Oromia', city: 'Nekemte', address: 'Bake Jama Sub-city', open: '8:00 AM – 5:00 PM' },
-  { id: 'br-amb', name: 'Ambo Branch', region: 'Oromia', city: 'Ambo', address: 'Ambo Town Centre', open: '8:00 AM – 5:00 PM' },
-  { id: 'br-jim', name: 'Jimma Branch', region: 'Oromia', city: 'Jimma', address: 'Hermata, Jimma', open: '8:00 AM – 5:00 PM' },
-  { id: 'br-adama', name: 'Adama Main Branch', region: 'Oromia', city: 'Adama', address: 'Dembela Sub-city', open: '8:00 AM – 5:00 PM' },
-  { id: 'br-hq', name: 'CBE Headquarters Branch', region: 'Addis Ababa', city: 'Addis Ababa', address: 'Ras Desta Damtew St, Kirkos', open: '8:00 AM – 5:00 PM' },
-  { id: 'br-bole', name: 'Bole Branch', region: 'Addis Ababa', city: 'Addis Ababa', address: 'Bole Medhanialem', open: '8:00 AM – 5:00 PM' },
-  { id: 'br-mer', name: 'Merkato Branch', region: 'Addis Ababa', city: 'Addis Ababa', address: 'Addis Ketema, Merkato', open: '8:00 AM – 6:00 PM' },
-  { id: 'br-piaz', name: 'Piassa Branch', region: 'Addis Ababa', city: 'Addis Ababa', address: 'Arada, Piassa', open: '8:00 AM – 5:00 PM' },
-  { id: 'br-bdr', name: 'Bahir Dar Branch', region: 'Amhara', city: 'Bahir Dar', address: 'Belay Zeleke Street', open: '8:00 AM – 5:00 PM' },
-  { id: 'br-gon', name: 'Gondar Branch', region: 'Amhara', city: 'Gondar', address: 'Piassa, Gondar', open: '8:00 AM – 5:00 PM' },
-  { id: 'br-hwa', name: 'Hawassa Branch', region: 'Sidama', city: 'Hawassa', address: 'Piassa, Hawassa', open: '8:00 AM – 5:00 PM' },
-  { id: 'br-mek', name: 'Mekelle Branch', region: 'Tigray', city: 'Mekelle', address: 'Hadnet Sub-city', open: '8:00 AM – 5:00 PM' },
-  { id: 'br-dd', name: 'Dire Dawa Branch', region: 'Dire Dawa', city: 'Dire Dawa', address: 'Kezira, Dire Dawa', open: '8:00 AM – 5:00 PM' },
+  {
+    id: BRANCH.id,
+    name: BRANCH.name,
+    region: BRANCH.region,
+    city: BRANCH.town,
+    address: BRANCH.address,
+    open: BRANCH.hoursShort,
+  },
 ]
 
 export const APPOINTMENT_SERVICES = [
@@ -78,6 +102,52 @@ export const TIME_SLOTS = [
   '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
   '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
 ]
+
+// ---------------------------------------------------------------
+// Mock staff accounts (demo only).
+// A real deployment would authenticate against CBE staff SSO / LDAP;
+// nothing here is a credential store.
+// ---------------------------------------------------------------
+export const STAFF_USERS = [
+  {
+    id: 'u-manager',
+    username: 'manager',
+    password: 'busa@123',
+    name: 'Ato Getachew Bekele',
+    role: 'Branch Manager',
+    roleId: 'manager',
+    unit: 'Branch Management',
+    permissions: ['view_all', 'update_status', 'escalate', 'close', 'manage_appointments', 'view_reports'],
+  },
+  {
+    id: 'u-officer',
+    username: 'officer',
+    password: 'busa@123',
+    name: 'W/ro Meseret Alemu',
+    role: 'Customer Service Officer',
+    roleId: 'officer',
+    unit: 'Customer Experience Desk',
+    permissions: ['view_all', 'update_status', 'escalate', 'manage_appointments'],
+  },
+  {
+    id: 'u-teller',
+    username: 'teller',
+    password: 'busa@123',
+    name: 'Ato Dawit Fikru',
+    role: 'Senior Teller',
+    roleId: 'teller',
+    unit: 'Counter Operations',
+    permissions: ['view_all', 'manage_appointments'],
+  },
+]
+
+export const ROLE_LABELS = {
+  manager: 'Branch Manager',
+  officer: 'Customer Service Officer',
+  teller: 'Senior Teller',
+}
+
+export const can = (user, perm) => !!user && user.permissions.includes(perm)
 
 export const STATUSES = {
   received:   { label: 'Received',    cls: 'b-new' },
@@ -190,12 +260,12 @@ function seed() {
       {
         id: 'CBE-2608-4471', type: 'complaint', category: 'atm', channel: 'ATM',
         severity: 'high', subject: 'ATM did not dispense cash but account debited',
-        description: 'I withdrew 5,000 ETB at the Nekemte Main ATM on 22 Aug. The machine did not dispense the cash but my account was debited immediately.',
+        description: 'I withdrew 5,000 ETB at the Busa Branch ATM on 22 Aug. The machine did not dispense the cash but my account was debited immediately.',
         name: 'Abebe Tolera', phone: '+251911234567', email: 'abebe.t@example.com',
-        account: '1000••••4471', region: 'Oromia', branch: 'br-nek',
+        account: '1000••••4471', region: 'Oromia', branch: 'br-busa',
         amount: '5000', txnRef: 'ATM88213904', status: 'progress',
         created: now - day * 3, updated: now - day * 1, rating: 0, files: ['atm-slip.jpg'],
-        assignee: 'Digital Banking Unit', anonymous: false,
+        assignee: 'Busa Branch — Digital Banking', anonymous: false,
         events: [
           { t: now - day * 3, title: 'Complaint received', msg: 'Logged via web portal and routed to Digital Banking Unit.', done: true },
           { t: now - day * 3 + 7200000, title: 'Acknowledged', msg: 'SMS confirmation sent to +251911234567.', done: true },
@@ -208,9 +278,9 @@ function seed() {
         severity: 'low', subject: 'Add fingerprint login to the CBE Birr app',
         description: 'Typing the PIN every time is slow. Please add biometric login for faster and safer access.',
         name: 'Hanna Girma', phone: '+251922334455', email: 'hanna.g@example.com',
-        account: '', region: 'Addis Ababa', branch: 'br-bole',
+        account: '', region: 'Oromia', branch: 'br-busa',
         amount: '', txnRef: '', status: 'review',
-        created: now - day * 6, updated: now - day * 4, rating: 0, files: [], assignee: 'Digital Product Team', anonymous: false,
+        created: now - day * 6, updated: now - day * 4, rating: 0, files: [], assignee: 'Busa Branch — Customer Experience', anonymous: false,
         events: [
           { t: now - day * 6, title: 'Feedback received', msg: 'Logged as a product suggestion.', done: true },
           { t: now - day * 4, title: 'Under review', msg: 'Shared with the digital product backlog committee.', done: true },
@@ -220,12 +290,12 @@ function seed() {
         id: 'CBE-2607-9902', type: 'complaint', category: 'service', channel: 'Branch counter',
         severity: 'medium', subject: 'Long waiting time at the counter',
         description: 'I waited more than one hour for a simple deposit. Only two counters were open during peak hours.',
-        name: 'Anonymous', phone: '', email: '', account: '', region: 'Amhara', branch: 'br-bdr',
+        name: 'Anonymous', phone: '', email: '', account: '', region: 'Oromia', branch: 'br-busa',
         amount: '', txnRef: '', status: 'resolved',
-        created: now - day * 15, updated: now - day * 9, rating: 4, files: [], assignee: 'Branch Operations', anonymous: true,
+        created: now - day * 15, updated: now - day * 9, rating: 4, files: [], assignee: 'Busa Branch — Operations', anonymous: true,
         events: [
           { t: now - day * 15, title: 'Complaint received', msg: 'Submitted anonymously via web portal.', done: true },
-          { t: now - day * 13, title: 'Under review', msg: 'Branch manager asked for a staffing report.', done: true },
+          { t: now - day * 13, title: 'Under review', msg: 'The Busa branch manager requested a staffing report.', done: true },
           { t: now - day * 11, title: 'In progress', msg: 'Two additional counters opened for peak hours (9–11 AM).', done: true },
           { t: now - day * 9, title: 'Resolved', msg: 'Queue management system installed and staffing schedule revised.', done: true },
         ],
@@ -235,10 +305,10 @@ function seed() {
         severity: 'critical', subject: 'Inbound remittance not credited after 6 days',
         description: 'A remittance of USD 1,200 sent from Dubai on 20 Aug has still not reached my account.',
         name: 'Yonas Bekele', phone: '+251933445566', email: 'yonas.b@example.com',
-        account: '1000••••7788', region: 'Addis Ababa', branch: 'br-hq',
+        account: '1000••••7788', region: 'Oromia', branch: 'br-busa',
         amount: '68400', txnRef: 'RMT-DXB-88120', status: 'escalated',
         created: now - day * 2, updated: now - 3600000 * 5, rating: 0, files: ['swift-copy.pdf'],
-        assignee: 'International Banking', anonymous: false,
+        assignee: 'Busa Branch — International Banking', anonymous: false,
         events: [
           { t: now - day * 2, title: 'Complaint received', msg: 'Flagged as critical — funds not credited.', done: true },
           { t: now - day * 1, title: 'Under review', msg: 'SWIFT MT103 trace initiated with the correspondent bank.', done: true },
@@ -247,15 +317,15 @@ function seed() {
       },
       {
         id: 'CBE-2608-1122', type: 'compliment', category: 'service', channel: 'Branch counter',
-        severity: 'low', subject: 'Excellent help from the Nekemte branch team',
-        description: 'Officer Meseret patiently helped my elderly mother open a savings account. Outstanding service.',
+        severity: 'low', subject: 'Excellent help from the Busa branch team',
+        description: 'Officer Meseret at Busa Branch patiently helped my elderly mother open a savings account. Outstanding service.',
         name: 'Lensa Dinku', phone: '+251944556677', email: 'lensa.d@example.com',
-        account: '', region: 'Oromia', branch: 'br-nek',
+        account: '', region: 'Oromia', branch: 'br-busa',
         amount: '', txnRef: '', status: 'closed',
-        created: now - day * 8, updated: now - day * 7, rating: 5, files: [], assignee: 'Branch Operations', anonymous: false,
+        created: now - day * 8, updated: now - day * 7, rating: 5, files: [], assignee: 'Busa Branch — Operations', anonymous: false,
         events: [
           { t: now - day * 8, title: 'Compliment received', msg: 'Thank you for recognising our staff.', done: true },
-          { t: now - day * 7, title: 'Closed', msg: 'Shared with the branch manager and noted in the staff recognition file.', done: true },
+          { t: now - day * 7, title: 'Closed', msg: 'Shared with the Busa branch manager and noted in the staff recognition file.', done: true },
         ],
       },
     ]
@@ -266,13 +336,13 @@ function seed() {
     const days = nextDays(10)
     const demo = [
       {
-        id: 'APT-48213', service: 'loan', branch: 'br-nek',
+        id: 'APT-48213', service: 'loan', branch: 'br-busa',
         date: toISODate(days[1]), time: '10:00',
         name: 'Abebe Tolera', phone: '+251911234567', email: 'abebe.t@example.com',
-        notes: 'Housing loan for a 3-bedroom unit in Nekemte.', status: 'confirmed', created: Date.now() - 86400000 * 2,
+        notes: 'Housing loan for a family home in Busa town.', status: 'confirmed', created: Date.now() - 86400000 * 2,
       },
       {
-        id: 'APT-51907', service: 'acc-open', branch: 'br-bole',
+        id: 'APT-51907', service: 'acc-open', branch: 'br-busa',
         date: toISODate(days[3]), time: '14:00',
         name: 'Hanna Girma', phone: '+251922334455', email: 'hanna.g@example.com',
         notes: 'Opening a business account for a new trading company.', status: 'pending', created: Date.now() - 86400000,
@@ -334,3 +404,30 @@ export function busySlots(branchId, date) {
 export const branchById = (id) => BRANCHES.find((b) => b.id === id)
 export const serviceById = (id) => APPOINTMENT_SERVICES.find((s) => s.id === id)
 export const categoryById = (id) => COMPLAINT_CATEGORIES.find((c) => c.id === id)
+
+
+// -------------------- Staff session --------------------
+const K_SESSION = 'cbe_care_session_v1'
+
+export function login(username, password) {
+  const u = STAFF_USERS.find(
+    (x) => x.username.toLowerCase() === String(username || '').trim().toLowerCase()
+  )
+  if (!u) return { ok: false, error: 'No staff account found with that username.' }
+  if (u.password !== password) return { ok: false, error: 'Incorrect password. Please try again.' }
+  const { password: _pw, ...safe } = u
+  const session = { ...safe, loginAt: Date.now() }
+  write(K_SESSION, session)
+  return { ok: true, user: session }
+}
+
+export function logout() {
+  try { rawSet(K_SESSION, '') } catch { /* ignore */ }
+  if (hasLS) { try { window.localStorage.removeItem(K_SESSION) } catch { /* ignore */ } }
+  memory.delete(K_SESSION)
+}
+
+export function currentUser() {
+  const u = read(K_SESSION, null)
+  return u && u.id ? u : null
+}

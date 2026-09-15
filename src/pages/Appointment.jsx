@@ -3,18 +3,18 @@ import { Link, useSearchParams } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
 import { PageHead, Stepper, Field, Alert } from '../components/UI.jsx'
 import {
-  APPOINTMENT_SERVICES, BRANCHES, REGIONS, TIME_SLOTS, nextDays,
-  makeAptId, saveAppointment, bookedSlots, busySlots, serviceById, branchById, fmtDate, toISODate,
+  APPOINTMENT_SERVICES, BRANCH, TIME_SLOTS, nextDays,
+  makeAptId, saveAppointment, bookedSlots, busySlots, serviceById, fmtDate, toISODate,
 } from '../data.js'
 
-const STEPS = ['Service', 'Branch', 'Date & Time', 'Your Details']
+const STEPS = ['Service', 'Date & Time', 'Your Details']
 
 export default function Appointment() {
   const [params] = useSearchParams()
   const [step, setStep] = useState(0)
   const [f, setF] = useState({
     service: params.get('service') || '',
-    region: '', branch: '', date: '', time: '',
+    region: '', branch: BRANCH.id, date: '', time: '',
     name: '', phone: '', email: '', notes: '', ticketRef: '',
     reminder: true, consent: false,
   })
@@ -24,9 +24,8 @@ export default function Appointment() {
   const set = (k, v) => { setF((p) => ({ ...p, [k]: v })); setErrs((p) => ({ ...p, [k]: '' })) }
 
   const days = useMemo(() => nextDays(14), [])
-  const branchOptions = useMemo(() => (f.region ? BRANCHES.filter((b) => b.region === f.region) : []), [f.region])
   const svc = serviceById(f.service)
-  const br = branchById(f.branch)
+  const br = BRANCH
 
   const unavailable = useMemo(() => {
     if (!f.branch || !f.date) return []
@@ -37,14 +36,10 @@ export default function Appointment() {
     const e = {}
     if (s === 0 && !f.service) e.service = 'Please choose the service you need.'
     if (s === 1) {
-      if (!f.region) e.region = 'Select a region.'
-      if (!f.branch) e.branch = 'Select the branch you want to visit.'
-    }
-    if (s === 2) {
       if (!f.date) e.date = 'Pick a date for your visit.'
       if (!f.time) e.time = 'Pick an available time slot.'
     }
-    if (s === 3) {
+    if (s === 2) {
       if (!f.name.trim()) e.name = 'Your full name is required.'
       if (!f.phone.trim()) e.phone = 'A phone number is required for confirmation.'
       else if (!/^(\+251|0)?9\d{8}$/.test(f.phone.replace(/[\s-]/g, ''))) e.phone = 'Use an Ethiopian mobile format, e.g. 0911234567.'
@@ -55,7 +50,7 @@ export default function Appointment() {
     return Object.keys(e).length === 0
   }
 
-  const next = () => { if (validate(step)) setStep((s) => Math.min(s + 1, 3)) }
+  const next = () => { if (validate(step)) setStep((s) => Math.min(s + 1, 2)) }
   const back = () => setStep((s) => Math.max(s - 1, 0))
 
   function book() {
@@ -72,7 +67,7 @@ export default function Appointment() {
     return (
       <div className="fade-in">
         <PageHead kicker="Booking confirmed" title="Your appointment is reserved" crumb="Book Appointment"
-          sub="Please arrive 10 minutes early and bring a valid ID." />
+          sub={`Please arrive 10 minutes early at ${BRANCH.name} and bring a valid ID.`} />
         <div className="wrap page-body">
           <div className="card success-wrap" style={{ padding: '38px 28px' }}>
             <div className="success-ico"><Icon name="calendar" size={36} stroke={2} /></div>
@@ -82,15 +77,15 @@ export default function Appointment() {
             <div className="ticket-box">
               <div className="lbl">Booking reference</div>
               <div className="code">{done.id}</div>
-              <div className="sub">{fmtDate(done.date)} at {done.time} · {branchById(done.branch)?.name}</div>
+              <div className="sub">{fmtDate(done.date)} at {done.time} · {BRANCH.name}</div>
             </div>
 
             <div className="review-block" style={{ textAlign: 'left' }}>
               <h4>Appointment details</h4>
               <div className="review-row"><span className="k">Service</span><span className="v">{serviceById(done.service)?.label}</span></div>
               <div className="review-row"><span className="k">Duration</span><span className="v">{serviceById(done.service)?.mins} minutes</span></div>
-              <div className="review-row"><span className="k">Branch</span><span className="v">{branchById(done.branch)?.name}</span></div>
-              <div className="review-row"><span className="k">Address</span><span className="v">{branchById(done.branch)?.address}, {branchById(done.branch)?.city}</span></div>
+              <div className="review-row"><span className="k">Branch</span><span className="v">{BRANCH.name}</span></div>
+              <div className="review-row"><span className="k">Address</span><span className="v">{BRANCH.addressFull}</span></div>
               <div className="review-row"><span className="k">Date &amp; time</span><span className="v">{fmtDate(done.date)} at {done.time}</span></div>
               <div className="review-row"><span className="k">Booked for</span><span className="v">{done.name}</span></div>
               {done.ticketRef && <div className="review-row"><span className="k">Linked case</span><span className="v mono">{done.ticketRef}</span></div>}
@@ -115,7 +110,7 @@ export default function Appointment() {
   return (
     <div className="fade-in">
       <PageHead kicker="Branch appointments" title="Book an Appointment" crumb="Book Appointment"
-        sub="Reserve a dedicated time with a branch officer and skip the queue. Available at all major CBE branches." />
+        sub={`Reserve a dedicated time with an officer at ${BRANCH.name} and skip the queue. ${BRANCH.hoursShort}.`} />
 
       <div className="wrap page-body">
         <div className="split">
@@ -125,7 +120,7 @@ export default function Appointment() {
             {/* STEP 0 — service */}
             {step === 0 && (
               <div className="fade-in">
-                <div className="form-section-title">Step 1 of 4</div>
+                <div className="form-section-title">Step 1 of 3</div>
                 <div className="form-section-desc">What do you need help with?</div>
                 <Field required error={errs.service}>
                   <div className="pick-grid">
@@ -156,55 +151,10 @@ export default function Appointment() {
               </div>
             )}
 
-            {/* STEP 1 — branch */}
+            {/* STEP 1 — date & time */}
             {step === 1 && (
               <div className="fade-in">
-                <div className="form-section-title">Step 2 of 4</div>
-                <div className="form-section-desc">Which branch would you like to visit?</div>
-
-                <Field label="Region" required error={errs.region}>
-                  <select className={`select ${errs.region ? 'bad' : ''}`} value={f.region}
-                    onChange={(e) => { set('region', e.target.value); set('branch', ''); set('time', '') }}>
-                    <option value="">Select region…</option>
-                    {REGIONS.filter((r) => BRANCHES.some((b) => b.region === r)).map((r) => <option key={r} value={r}>{r}</option>)}
-                  </select>
-                </Field>
-
-                {f.region && (
-                  <Field label="Branch" required error={errs.branch}>
-                    <div className="pick-grid">
-                      {branchOptions.map((b) => (
-                        <button type="button" key={b.id} className={`pick ${f.branch === b.id ? 'on' : ''}`}
-                          onClick={() => { set('branch', b.id); set('time', '') }}>
-                          <span className="pick-ico"><Icon name="pin" size={18} /></span>
-                          <span>
-                            <span className="pick-t" style={{ display: 'block' }}>{b.name}</span>
-                            <span className="pick-d">{b.address}, {b.city}</span>
-                            <span className="pick-d" style={{ display: 'block', marginTop: 3 }}><Icon name="clock" size={11} /> {b.open}</span>
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </Field>
-                )}
-
-                {!f.region && (
-                  <Alert tone="info" icon="info">
-                    Choose a region to see the branches offering appointment booking. More branches are added every month.
-                  </Alert>
-                )}
-
-                <div className="form-nav">
-                  <button className="btn btn-ghost" onClick={back}><Icon name="back" size={16} /> Back</button>
-                  <button className="btn btn-primary" onClick={next}>Continue <Icon name="arrow" size={16} /></button>
-                </div>
-              </div>
-            )}
-
-            {/* STEP 2 — date & time */}
-            {step === 2 && (
-              <div className="fade-in">
-                <div className="form-section-title">Step 3 of 4</div>
+                <div className="form-section-title">Step 2 of 3</div>
                 <div className="form-section-desc">Pick a date and an available time slot.</div>
 
                 <Field label="Choose a date" required error={errs.date} help="Branches are closed on Sundays and public holidays.">
@@ -241,12 +191,12 @@ export default function Appointment() {
                       })}
                     </div>
                     <div className="help" style={{ marginTop: 10 }}>
-                      Showing slots for {br?.name} on {fmtDate(f.date)}. Each session lasts about {svc?.mins} minutes.
+                      Showing slots for {br.name} on {fmtDate(f.date)}. Each session lasts about {svc?.mins} minutes.
                     </div>
                   </Field>
                 )}
 
-                {!f.date && <Alert tone="purple" icon="calendar">Select a date above to see the live slot availability for {br?.name}.</Alert>}
+                {!f.date && <Alert tone="purple" icon="calendar">Select a date above to see the live slot availability for {br.name}.</Alert>}
 
                 <div className="form-nav">
                   <button className="btn btn-ghost" onClick={back}><Icon name="back" size={16} /> Back</button>
@@ -255,10 +205,10 @@ export default function Appointment() {
               </div>
             )}
 
-            {/* STEP 3 — details */}
-            {step === 3 && (
+            {/* STEP 2 — details */}
+            {step === 2 && (
               <div className="fade-in">
-                <div className="form-section-title">Step 4 of 4</div>
+                <div className="form-section-title">Step 3 of 3</div>
                 <div className="form-section-desc">Who is this appointment for?</div>
 
                 <div className="grid-2">
@@ -304,8 +254,8 @@ export default function Appointment() {
                 <div className="review-block" style={{ marginTop: 18 }}>
                   <h4>Booking summary</h4>
                   <div className="review-row"><span className="k">Service</span><span className="v">{svc?.label} ({svc?.mins} min)</span></div>
-                  <div className="review-row"><span className="k">Branch</span><span className="v">{br?.name}</span></div>
-                  <div className="review-row"><span className="k">Address</span><span className="v">{br?.address}, {br?.city}</span></div>
+                  <div className="review-row"><span className="k">Branch</span><span className="v">{br.name}</span></div>
+                  <div className="review-row"><span className="k">Address</span><span className="v">{br.addressFull}</span></div>
                   <div className="review-row"><span className="k">Date &amp; time</span><span className="v">{fmtDate(f.date)} at {f.time}</span></div>
                 </div>
 
@@ -323,7 +273,7 @@ export default function Appointment() {
               <h3 style={{ fontSize: 15.5, marginBottom: 12 }}>Your booking</h3>
               <div className="kv"><span className="k">Service</span><span className="v">{svc?.label || '—'}</span></div>
               <div className="kv"><span className="k">Duration</span><span className="v">{svc ? `${svc.mins} min` : '—'}</span></div>
-              <div className="kv"><span className="k">Branch</span><span className="v">{br?.name || '—'}</span></div>
+              <div className="kv"><span className="k">Branch</span><span className="v">{br.name}</span></div>
               <div className="kv"><span className="k">Date</span><span className="v">{f.date ? fmtDate(f.date) : '—'}</span></div>
               <div className="kv"><span className="k">Time</span><span className="v">{f.time || '—'}</span></div>
               <div style={{ marginTop: 14 }}>

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
 import { PageHead, Badge, Empty, useToast, Alert } from '../components/UI.jsx'
 import {
-  getAppointments, updateAppointment, APT_STATUS, serviceById, branchById,
+  getAppointments, updateAppointment, APT_STATUS, serviceById, branchById, BRANCH,
   fmtDate, nextDays, TIME_SLOTS, bookedSlots, busySlots, toISODate,
 } from '../data.js'
 
@@ -57,7 +57,7 @@ export default function MyAppointments() {
     <div className="fade-in">
       {toast.node}
       <PageHead kicker="Manage bookings" title="My Appointments" crumb="My Appointments"
-        sub="View, reschedule or cancel your branch appointments. Search by booking reference, name or phone number." />
+        sub={`View, reschedule or cancel your ${BRANCH.name} appointments. Search by booking reference, name or phone number.`} />
 
       <div className="wrap page-body">
         <div className="card" style={{ marginBottom: 18 }}>
@@ -83,7 +83,7 @@ export default function MyAppointments() {
         {filtered.length === 0 ? (
           <div className="card">
             <Empty icon="calendar" title={`No ${tab} appointments`}
-              sub={tab === 'upcoming' ? 'Book a slot with a branch officer and skip the queue entirely.' : 'Nothing to show here yet.'}
+              sub={tab === 'upcoming' ? `Book a slot at ${BRANCH.name} and skip the queue entirely.` : 'Nothing to show here yet.'}
               action={<Link className="btn btn-primary" to="/appointment"><Icon name="calendar" size={16} /> Book an appointment</Link>} />
           </div>
         ) : (

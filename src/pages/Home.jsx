@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
-import { getTickets, getAppointments, FEEDBACK_TYPES } from '../data.js'
+import { getTickets, getAppointments, FEEDBACK_TYPES, BRANCH } from '../data.js'
 
 export default function Home() {
   const nav = useNavigate()
@@ -25,11 +25,12 @@ export default function Home() {
         <div className="wrap">
           <div className="hero-grid">
             <div>
-              <div className="eyebrow"><span className="dot" /> Customer Voice Portal · Since 1942</div>
-              <h1>Your voice shapes <em>better banking</em> at CBE</h1>
+              <div className="eyebrow"><span className="dot" /> {BRANCH.name} · {BRANCH.woreda}, {BRANCH.zone}</div>
+              <h1>Your voice shapes <em>better banking</em> in Busa</h1>
               <p className="hero-sub">
-                Lodge a complaint, share feedback, or book a branch appointment in minutes.
-                Every submission gets a tracking number and a guaranteed response time — no queues, no paperwork.
+                Lodge a complaint, share feedback, or book an appointment at the Commercial Bank of Ethiopia,
+                Busa Branch — in minutes. Every submission gets a tracking number and a guaranteed response
+                time, so you can skip the queue at the counter.
               </p>
               <div className="hero-cta">
                 <Link className="btn btn-gold" to="/submit">
@@ -40,10 +41,10 @@ export default function Home() {
                 </Link>
               </div>
               <div className="hero-stats">
-                <div className="hero-stat"><div className="v">1,300+</div><div className="l">Branches nationwide</div></div>
+                <div className="hero-stat"><div className="v">{BRANCH.counters}</div><div className="l">Service counters</div></div>
                 <div className="hero-stat"><div className="v">48 hrs</div><div className="l">First response target</div></div>
                 <div className="hero-stat"><div className="v">{SLA_PERFORMANCE}%</div><div className="l">Cases resolved on SLA</div></div>
-                <div className="hero-stat"><div className="v">24/7</div><div className="l">Digital intake</div></div>
+                <div className="hero-stat"><div className="v">{BRANCH.staffCount}</div><div className="l">Branch staff</div></div>
               </div>
             </div>
 
@@ -93,7 +94,7 @@ export default function Home() {
               { icon: 'alert', gold: false, t: 'Lodge a Complaint', d: 'Report a failed transaction, service issue or staff conduct concern. Attach evidence and get an SLA-backed resolution.', to: '/submit', cta: 'Start complaint' },
               { icon: 'bulb', gold: true, t: 'Share Feedback', d: 'Send a suggestion, compliment or inquiry. Your ideas feed directly into our service improvement programme.', to: '/submit', cta: 'Give feedback' },
               { icon: 'search', gold: false, t: 'Track Your Ticket', d: 'Follow every step of your case with a live timeline, assigned unit and expected resolution date.', to: '/track', cta: 'Track now' },
-              { icon: 'calendar', gold: true, t: 'Book an Appointment', d: 'Reserve a time with a branch officer for loans, account opening, forex and more. Skip the queue.', to: '/appointment', cta: 'Book a slot' },
+              { icon: 'calendar', gold: true, t: 'Book an Appointment', d: 'Reserve a time with a Busa Branch officer for loans, account opening, forex and more. Skip the queue.', to: '/appointment', cta: 'Book a slot' },
             ].map((c) => (
               <Link key={c.t} to={c.to} className="svc-card">
                 <div className={`svc-icon ${c.gold ? 'gold' : ''}`}><Icon name={c.icon} size={23} /></div>
@@ -159,7 +160,8 @@ export default function Home() {
                   <Icon name="shield" size={17} />
                   <div>
                     <strong>Unresolved after the target date?</strong> Your case is escalated automatically to the
-                    Customer Experience Directorate, and you can request a Complaint Review Meeting at your branch.
+                    Customer Experience Directorate, and you can request a Complaint Review Meeting with the
+                    {' '}{BRANCH.name} Manager.
                   </div>
                 </div>
               </div>
@@ -178,6 +180,28 @@ export default function Home() {
                         <div style={{ fontWeight: 700, fontSize: 14 }}>{f.label}</div>
                         <div style={{ fontSize: 12.5, color: 'var(--ink-3)' }}>{f.desc}</div>
                       </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="card" style={{ marginBottom: 18 }}>
+                <h3 style={{ fontSize: 16, marginBottom: 4 }}>Visit {BRANCH.name}</h3>
+                <p style={{ fontSize: 12.5, color: 'var(--ink-3)', marginBottom: 14 }}>
+                  {BRANCH.addressFull}
+                </p>
+                <div style={{ display: 'grid', gap: 9 }}>
+                  {[
+                    ['clock', BRANCH.hoursWeekday],
+                    ['clock', BRANCH.hoursSaturday],
+                    ['users', `${BRANCH.staffCount} staff · ${BRANCH.counters} service counters`],
+                    ['mail', BRANCH.email],
+                  ].map(([ic, tx]) => (
+                    <div key={tx} style={{ display: 'flex', gap: 9, alignItems: 'center', fontSize: 13 }}>
+                      <span style={{ color: 'var(--cbe-purple)', display: 'grid', placeItems: 'center' }}>
+                        <Icon name={ic} size={15} />
+                      </span>
+                      <span style={{ color: 'var(--ink-2)' }}>{tx}</span>
                     </div>
                   ))}
                 </div>

@@ -3,8 +3,8 @@ import Icon from '../components/Icon.jsx'
 import { PageHead, Badge, Empty, useToast, Alert } from '../components/UI.jsx'
 import {
   getTickets, updateTicket, getAppointments, updateAppointment,
-  STATUSES, APT_STATUS, COMPLAINT_CATEGORIES, categoryById, branchById, serviceById,
-  fmtDate, fmtDateTime, addBusinessDays,
+  STATUSES, APT_STATUS, COMPLAINT_CATEGORIES, categoryById, serviceById,
+  fmtDate, fmtDateTime, addBusinessDays, BRANCH, currentUser, can,
 } from '../data.js'
 
 export default function Admin() {
@@ -17,6 +17,11 @@ export default function Admin() {
   const [open, setOpen] = useState(null)
   const [note, setNote] = useState('')
   const toast = useToast()
+  const user = currentUser()
+  const mayUpdate = can(user, 'update_status')
+  const mayClose = can(user, 'close')
+  const mayEscalate = can(user, 'escalate')
+  const canApts = can(user, 'manage_appointments')
 
   const stats = useMemo(() => {
     const total = tickets.length
@@ -76,14 +81,15 @@ export default function Admin() {
   return (
     <div className="fade-in">
       {toast.node}
-      <PageHead kicker="Internal · Customer Experience Directorate" title="Staff Resolution Desk" crumb="Staff Desk"
-        sub="Monitor complaint volumes, SLA compliance and branch appointments across the network." />
+      <PageHead kicker={`Internal · ${BRANCH.name} · ${BRANCH.woreda}`} title="Staff Resolution Desk" crumb="Staff Desk"
+        sub={`Monitor complaint volumes, SLA compliance and appointments for ${BRANCH.bank}, ${BRANCH.name}.`} />
 
       <div className="wrap page-body">
         <div style={{ marginBottom: 18 }}>
-          <Alert tone="gold" icon="lock">
-            <strong>Demonstration view.</strong> In production this desk sits behind CBE staff single sign-on with
-            role-based access control and a full audit trail.
+          <Alert tone="purple" icon="shield">
+            Signed in as <strong>{user?.name}</strong> — {user?.role}, {BRANCH.name}.
+            {' '}Your role grants: {user?.permissions.length} permission{user?.permissions.length === 1 ? '' : 's'}
+            {!mayClose && ' (closing cases is restricted to the Branch Manager)'}.
           </Alert>
         </div>
 
@@ -92,7 +98,7 @@ export default function Admin() {
           <div className="stat-tile accent">
             <div className="k">Total cases</div>
             <div className="v">{stats.total}</div>
-            <div className="d">All channels, all regions</div>
+            <div className="d">All channels · {BRANCH.town}</div>
           </div>
           <div className="stat-tile">
             <div className="k">Open</div>
@@ -199,7 +205,7 @@ export default function Admin() {
                       <div className="review-row"><span className="k">Service area</span><span className="v">{categoryById(open.category)?.label}</span></div>
                       <div className="review-row"><span className="k">Channel</span><span className="v">{open.channel}</span></div>
                       <div className="review-row"><span className="k">Region</span><span className="v">{open.region}</span></div>
-                      {open.branch && <div className="review-row"><span className="k">Branch</span><span className="v">{branchById(open.branch)?.name}</span></div>}
+                      <div className="review-row"><span className="k">Branch</span><span className="v">{BRANCH.name}</span></div>
                       {open.amount && <div className="review-row"><span className="k">Amount</span><span className="v">ETB {Number(open.amount).toLocaleString()}</span></div>}
                       {open.txnRef && <div className="review-row"><span className="k">Txn ref</span><span className="v mono">{open.txnRef}</span></div>}
                       <div className="review-row"><span className="k">Customer</span><span className="v">{open.anonymous ? 'Anonymous' : `${open.name} · ${open.phone}`}</span></div>
@@ -215,17 +221,31 @@ export default function Admin() {
                   <div>
                     <div className="review-block">
                       <h4>Update this case</h4>
-                      <textarea className="textarea" style={{ minHeight: 90, marginBottom: 12 }}
-                        placeholder="Add a note that the customer will see on their timeline (optional)…"
-                        value={note} onChange={(e) => setNote(e.target.value)} />
-                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                        {['review', 'progress', 'escalated', 'resolved', 'closed'].map((s) => (
-                          <button key={s} className={`btn btn-sm ${s === 'resolved' ? 'btn-primary' : s === 'escalated' ? 'btn-gold' : 'btn-ghost'}`}
-                            disabled={open.status === s} onClick={() => setStatus(open.id, s)}>
-                            {STATUSES[s].label}
-                          </button>
-                        ))}
-                      </div>
+                      {mayUpdate ? (
+                        <>
+                          <textarea className="textarea" style={{ minHeight: 90, marginBottom: 12 }}
+                            placeholder="Add a note that the customer will see on their timeline (optional)…"
+                            value={note} onChange={(e) => setNote(e.target.value)} />
+                          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            {['review', 'progress', 'escalated', 'resolved', 'closed'].map((s) => {
+                              const blocked =
+                                (s === 'escalated' && !mayEscalate) || (s === 'closed' && !mayClose)
+                              return (
+                                <button key={s} className={`btn btn-sm ${s === 'resolved' ? 'btn-primary' : s === 'escalated' ? 'btn-gold' : 'btn-ghost'}`}
+                                  disabled={open.status === s || blocked}
+                                  title={blocked ? `Your role cannot ${s === 'closed' ? 'close' : 'escalate'} cases` : undefined}
+                                  onClick={() => setStatus(open.id, s)}>
+                                  {STATUSES[s].label}{blocked ? ' 🔒' : ''}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </>
+                      ) : (
+                        <Alert tone="gold" icon="lock">
+                          Your role ({user?.role}) has read-only access to cases. Contact the Branch Manager to change a status.
+                        </Alert>
+                      )}
                     </div>
 
                     <div className="review-block">
@@ -256,7 +276,7 @@ export default function Admin() {
             <div className="table-wrap">
               <table>
                 <thead>
-                  <tr><th>Reference</th><th>Service</th><th>Branch</th><th>Date &amp; time</th><th>Customer</th><th>Status</th><th>Actions</th></tr>
+                  <tr><th>Reference</th><th>Service</th><th>Date &amp; time</th><th>Customer</th><th>Status</th><th>Actions</th></tr>
                 </thead>
                 <tbody>
                   {[...apts].sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)).map((a) => (
@@ -266,14 +286,13 @@ export default function Admin() {
                         <div style={{ fontWeight: 600 }}>{serviceById(a.service)?.label}</div>
                         <div style={{ fontSize: 12, color: 'var(--ink-3)' }}>{serviceById(a.service)?.mins} min</div>
                       </td>
-                      <td>{branchById(a.branch)?.name}</td>
                       <td style={{ whiteSpace: 'nowrap' }}>{fmtDate(a.date)}<div style={{ fontSize: 12, color: 'var(--ink-3)' }}>{a.time}</div></td>
                       <td>{a.name}<div style={{ fontSize: 12, color: 'var(--ink-3)' }}>{a.phone}</div></td>
                       <td><Badge status={a.status} map={APT_STATUS} /></td>
                       <td>
                         <div style={{ display: 'flex', gap: 6 }}>
-                          <button className="btn btn-ghost btn-sm" disabled={a.status === 'confirmed'} onClick={() => setApt(a.id, 'confirmed')}>Confirm</button>
-                          <button className="btn btn-ghost btn-sm" disabled={a.status === 'completed'} onClick={() => setApt(a.id, 'completed')}>Complete</button>
+                          <button className="btn btn-ghost btn-sm" disabled={a.status === 'confirmed' || !canApts} onClick={() => setApt(a.id, 'confirmed')}>Confirm</button>
+                          <button className="btn btn-ghost btn-sm" disabled={a.status === 'completed' || !canApts} onClick={() => setApt(a.id, 'completed')}>Complete</button>
                         </div>
                       </td>
                     </tr>

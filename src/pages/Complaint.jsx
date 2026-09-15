@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
 import { PageHead, Stepper, Field, Alert } from '../components/UI.jsx'
 import {
-  FEEDBACK_TYPES, COMPLAINT_CATEGORIES, CHANNELS, SEVERITIES, REGIONS, BRANCHES,
-  makeTicketId, saveTicket, addBusinessDays, fmtDate, categoryById, branchById,
+  FEEDBACK_TYPES, COMPLAINT_CATEGORIES, CHANNELS, SEVERITIES, LOCALITIES, BRANCH,
+  makeTicketId, saveTicket, addBusinessDays, fmtDate, categoryById,
 } from '../data.js'
 
 const STEPS = ['Type', 'Details', 'Contact', 'Review']
@@ -12,7 +12,7 @@ const STEPS = ['Type', 'Details', 'Contact', 'Review']
 const empty = {
   type: 'complaint', category: '', channel: '', severity: 'medium',
   subject: '', description: '', amount: '', txnRef: '', incidentDate: '',
-  name: '', phone: '', email: '', account: '', region: '', branch: '',
+  name: '', phone: '', email: '', account: '', region: '', branch: BRANCH.id,
   anonymous: false, consent: false, contactPref: 'sms', rating: 0, files: [],
 }
 
@@ -27,11 +27,6 @@ export default function Complaint() {
     setF((p) => ({ ...p, [k]: v }))
     setErrs((p) => ({ ...p, [k]: '' }))
   }
-
-  const branchOptions = useMemo(
-    () => (f.region ? BRANCHES.filter((b) => b.region === f.region) : BRANCHES),
-    [f.region]
-  )
 
   const cat = categoryById(f.category)
   const sla = cat?.sla ?? 5
@@ -60,7 +55,7 @@ export default function Complaint() {
         if (f.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) e.email = 'Enter a valid email address.'
         if (f.account && !/^\d{10,16}$/.test(f.account.replace(/\s/g, ''))) e.account = 'Account number should be 10–16 digits.'
       }
-      if (!f.region) e.region = 'Please select your region.'
+      if (!f.region) e.region = 'Please tell us where you are based.'
       if (!f.consent) e.consent = 'You must accept the data processing notice to continue.'
     }
     setErrs(e)
@@ -78,16 +73,17 @@ export default function Complaint() {
     const ticket = {
       ...f,
       id,
+      branch: BRANCH.id,
       status: 'received',
       created: now,
       updated: now,
-      assignee: 'Customer Experience Desk',
+      assignee: 'Busa Branch — Customer Service Desk',
       name: f.anonymous ? 'Anonymous' : f.name,
       phone: f.anonymous ? '' : f.phone,
       email: f.anonymous ? '' : f.email,
       account: f.anonymous ? '' : f.account,
       events: [
-        { t: now, title: `${label} received`, msg: 'Logged via the CBE Care web portal and queued for triage.', done: true },
+        { t: now, title: `${label} received`, msg: `Logged via the CBE Care portal and queued for triage at ${BRANCH.name}.`, done: true },
         { t: now + 1000, title: 'Acknowledgement sent', msg: f.anonymous ? 'Anonymous submission — keep your reference number safe.' : `Confirmation sent to ${f.phone}.`, done: true },
       ],
     }
@@ -344,21 +340,14 @@ export default function Complaint() {
                   </>
                 )}
 
-                <div className="grid-2">
-                  <Field label="Region" required error={errs.region}>
-                    <select className={`select ${errs.region ? 'bad' : ''}`} value={f.region}
-                      onChange={(e) => { set('region', e.target.value); set('branch', '') }}>
-                      <option value="">Select region…</option>
-                      {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
-                    </select>
-                  </Field>
-                  <Field label="Branch concerned" optional>
-                    <select className="select" value={f.branch} onChange={(e) => set('branch', e.target.value)} disabled={!f.region}>
-                      <option value="">{f.region ? 'Select branch…' : 'Choose a region first'}</option>
-                      {branchOptions.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-                    </select>
-                  </Field>
-                </div>
+                <Field label="Where are you based?" required error={errs.region}
+                  help="Helps the branch plan outreach. All cases are handled by CBE Busa Branch.">
+                  <select className={`select ${errs.region ? 'bad' : ''}`} value={f.region}
+                    onChange={(e) => set('region', e.target.value)}>
+                    <option value="">Select your locality…</option>
+                    {LOCALITIES.map((r) => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </Field>
 
                 <div className="divider" />
 
@@ -413,8 +402,8 @@ export default function Complaint() {
                       <div className="review-row"><span className="k">Contact preference</span><span className="v" style={{ textTransform: 'capitalize' }}>{f.contactPref}</span></div>
                     </>
                   )}
-                  <div className="review-row"><span className="k">Region</span><span className="v">{f.region}</span></div>
-                  {f.branch && <div className="review-row"><span className="k">Branch</span><span className="v">{branchById(f.branch)?.name}</span></div>}
+                  <div className="review-row"><span className="k">Your locality</span><span className="v">{f.region}</span></div>
+                  <div className="review-row"><span className="k">Handled by</span><span className="v">{BRANCH.bank} — {BRANCH.name}</span></div>
                 </div>
 
                 <Alert tone="gold" icon="clock">
