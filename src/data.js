@@ -266,6 +266,7 @@ function seed() {
         amount: '5000', txnRef: 'ATM88213904', status: 'progress',
         created: now - day * 3, updated: now - day * 1, rating: 0, files: ['atm-slip.jpg'],
         assignee: 'Busa Branch — Digital Banking', anonymous: false,
+        solution: '',
         events: [
           { t: now - day * 3, title: 'Complaint received', msg: 'Logged via web portal and routed to Digital Banking Unit.', done: true },
           { t: now - day * 3 + 7200000, title: 'Acknowledged', msg: 'SMS confirmation sent to +251911234567.', done: true },
@@ -281,6 +282,7 @@ function seed() {
         account: '', region: 'Oromia', branch: 'br-busa',
         amount: '', txnRef: '', status: 'review',
         created: now - day * 6, updated: now - day * 4, rating: 0, files: [], assignee: 'Busa Branch — Customer Experience', anonymous: false,
+        solution: '',
         events: [
           { t: now - day * 6, title: 'Feedback received', msg: 'Logged as a product suggestion.', done: true },
           { t: now - day * 4, title: 'Under review', msg: 'Shared with the digital product backlog committee.', done: true },
@@ -293,6 +295,7 @@ function seed() {
         name: 'Anonymous', phone: '', email: '', account: '', region: 'Oromia', branch: 'br-busa',
         amount: '', txnRef: '', status: 'resolved',
         created: now - day * 15, updated: now - day * 9, rating: 4, files: [], assignee: 'Busa Branch — Operations', anonymous: true,
+        solution: 'Queue management system has been installed and the staffing schedule has been revised. Two additional counters are now open during peak hours (9–11 AM) to reduce waiting times. We appreciate your feedback.',
         events: [
           { t: now - day * 15, title: 'Complaint received', msg: 'Submitted anonymously via web portal.', done: true },
           { t: now - day * 13, title: 'Under review', msg: 'The Busa branch manager requested a staffing report.', done: true },
@@ -309,6 +312,7 @@ function seed() {
         amount: '68400', txnRef: 'RMT-DXB-88120', status: 'escalated',
         created: now - day * 2, updated: now - 3600000 * 5, rating: 0, files: ['swift-copy.pdf'],
         assignee: 'Busa Branch — International Banking', anonymous: false,
+        solution: '',
         events: [
           { t: now - day * 2, title: 'Complaint received', msg: 'Flagged as critical — funds not credited.', done: true },
           { t: now - day * 1, title: 'Under review', msg: 'SWIFT MT103 trace initiated with the correspondent bank.', done: true },
@@ -323,6 +327,7 @@ function seed() {
         account: '', region: 'Oromia', branch: 'br-busa',
         amount: '', txnRef: '', status: 'closed',
         created: now - day * 8, updated: now - day * 7, rating: 5, files: [], assignee: 'Busa Branch — Operations', anonymous: false,
+        solution: 'Thank you for your kind words. Officer Meseret has been recognised for her outstanding service. Your feedback has been shared with the branch manager and noted in the staff recognition file.',
         events: [
           { t: now - day * 8, title: 'Compliment received', msg: 'Thank you for recognising our staff.', done: true },
           { t: now - day * 7, title: 'Closed', msg: 'Shared with the Busa branch manager and noted in the staff recognition file.', done: true },

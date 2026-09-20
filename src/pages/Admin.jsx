@@ -16,6 +16,7 @@ export default function Admin() {
   const [fCat, setFCat] = useState('all')
   const [open, setOpen] = useState(null)
   const [note, setNote] = useState('')
+  const [solution, setSolution] = useState('')
   const toast = useToast()
   const user = currentUser()
   const mayUpdate = can(user, 'update_status')
@@ -65,10 +66,15 @@ export default function Admin() {
     const t = tickets.find((x) => x.id === id)
     const [title, msg] = labels[status] || ['Updated', 'Status updated.']
     const events = [...t.events, { t: Date.now(), title, msg: note.trim() || msg, done: true }]
-    updateTicket(id, { status, events })
+    const patch = { status, events }
+    if (solution.trim()) {
+      patch.solution = solution.trim()
+    }
+    updateTicket(id, patch)
     setTickets(getTickets())
-    setOpen((p) => (p ? { ...p, status, events } : p))
+    setOpen((p) => (p ? { ...p, ...patch } : p))
     setNote('')
+    if (solution.trim()) setSolution('')
     toast.show(`${id} marked as ${STATUSES[status].label}`)
   }
 
@@ -175,7 +181,7 @@ export default function Admin() {
                           </td>
                           <td><Badge status={t.status} map={STATUSES} /></td>
                           <td>
-                            <button className="btn btn-ghost btn-sm" onClick={() => { setOpen(t); setNote('') }}>Open</button>
+                            <button className="btn btn-ghost btn-sm" onClick={() => { setOpen(t); setNote(''); setSolution(t.solution || '') }}>Open</button>
                           </td>
                         </tr>
                       )
@@ -216,6 +222,13 @@ export default function Admin() {
                       <h4>Customer description</h4>
                       <p style={{ fontSize: 13.5, color: 'var(--ink-2)', lineHeight: 1.6 }}>{open.description}</p>
                     </div>
+
+                    {open.solution && (
+                      <div className="review-block" style={{ borderColor: 'var(--ok)', background: 'var(--ok-soft)' }}>
+                        <h4 style={{ color: 'var(--ok)' }}>Staff Feedback / Solution</h4>
+                        <p style={{ fontSize: 13.5, color: '#145c42', lineHeight: 1.6 }}>{open.solution}</p>
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -223,7 +236,16 @@ export default function Admin() {
                       <h4>Update this case</h4>
                       {mayUpdate ? (
                         <>
-                          <textarea className="textarea" style={{ minHeight: 90, marginBottom: 12 }}
+                          <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-2)', marginBottom: 6, display: 'block' }}>
+                            Staff Feedback / Solution <span style={{ fontWeight: 500, color: 'var(--ink-3)' }}>(visible to customer)</span>
+                          </label>
+                          <textarea className="textarea" style={{ minHeight: 100, marginBottom: 14 }}
+                            placeholder="Enter the resolution, feedback, or solution for this case. The customer will see this on their tracking page…"
+                            value={solution} onChange={(e) => setSolution(e.target.value)} />
+                          <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-2)', marginBottom: 6, display: 'block' }}>
+                            Internal Note <span style={{ fontWeight: 500, color: 'var(--ink-3)' }}>(shown on timeline)</span>
+                          </label>
+                          <textarea className="textarea" style={{ minHeight: 70, marginBottom: 12 }}
                             placeholder="Add a note that the customer will see on their timeline (optional)…"
                             value={note} onChange={(e) => setNote(e.target.value)} />
                           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>

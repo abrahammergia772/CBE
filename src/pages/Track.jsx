@@ -155,6 +155,17 @@ export default function Track() {
                 </div>
               </div>
 
+              {/* Staff Feedback / Solution */}
+              {t.solution && (
+                <div className="card" style={{ marginBottom: 18, borderColor: 'var(--ok)', borderLeft: '4px solid var(--ok)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 10 }}>
+                    <Icon name="checkCircle" size={18} style={{ color: 'var(--ok)' }} />
+                    <h3 style={{ fontSize: 16, color: 'var(--ok)' }}>Staff Feedback / Solution</h3>
+                  </div>
+                  <p style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.7 }}>{t.solution}</p>
+                </div>
+              )}
+
               {/* Rating */}
               {['resolved', 'closed'].includes(t.status) && (
                 <div className="card">
